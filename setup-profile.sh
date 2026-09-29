@@ -32,14 +32,19 @@ if ! gh auth status >/dev/null 2>&1; then
 fi
 
 echo "→ Updating profile for @${USER} ..."
-gh api -X PATCH /user \
-  -f name="$NAME" \
-  -f bio="$BIO" \
-  -f blog="$BLOG" \
-  -f location="$LOCATION" \
-  -f company="$COMPANY" \
-  -f hireable=true \
-  --jq '"  ✓ name=\(.name)  bio=\(.bio)"'
+if gh api -X PATCH /user \
+      -f name="$NAME" \
+      -f bio="$BIO" \
+      -f blog="$BLOG" \
+      -f location="$LOCATION" \
+      -f company="$COMPANY" \
+      -f hireable=true \
+      --jq '"  ✓ name=\(.name)  bio=\(.bio)  blog=\(.blog)"'; then
+  :
+else
+  echo "  ⚠ Skipped the profile header (name/bio): this token lacks the \"user\" scope."
+  echo "    Fix with:  gh auth refresh -h github.com -s user   then re-run this script."
+fi
 
 # ----------------------------------------------------------------------------
 # 2. Repo descriptions + topics (topics make you show up in GitHub search)
